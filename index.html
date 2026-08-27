@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sucesso X - Ferramentas para Criadores de Conteúdo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .gold-gradient {
+      background: linear-gradient(135deg, #FFE066 0%, #D4AF37 50%, #996515 100%);
+    }
+    .gold-border {
+      border: 1px solid rgba(212, 175, 55, 0.4);
+    }
+    .blue-glow {
+      box-shadow: 0 0 25px rgba(37, 99, 235, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-[#070a12] text-gray-100 min-h-screen flex flex-col items-center p-4 font-sans antialiased">
+
+  <div class="w-full max-w-4xl space-y-6 my-6">
+
+    <!-- 1. TOPO: LOGO OFICIAL SUCESSO X -->
+    <header class="text-center flex flex-col items-center">
+      <img 
+        src="logo.png" 
+        alt="Sucesso X" 
+        class="w-56 sm:w-64 h-auto object-contain drop-shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-transform duration-300 hover:scale-105"
+      >
+      <p class="text-gray-400 text-xs sm:text-sm mt-2 font-medium tracking-wide">
+        Ferramentas & Conteúdo para Criadores
+      </p>
+    </header>
+
+    <!-- 2. COMUNIDADE DO WHATSAPP -->
+    <div class="bg-[#0b1320] border border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center text-emerald-400 text-xl">
+          <i class="fa-brands fa-whatsapp"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-white text-sm sm:text-base">Comunidade Sucesso X no WhatsApp</h3>
+          <p class="text-xs text-gray-400">Junte-se aos criadores em nossa comunidade exclusiva!</p>
+        </div>
+      </div>
+      <a href="https://chat.whatsapp.com/LezU7Y3fHlxDj461UWVVVV?s=cl&p=a&mlu=4" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-xl transition text-xs sm:text-sm whitespace-nowrap shadow-md flex items-center gap-2">
+        <i class="fa-brands fa-whatsapp text-lg"></i> ENTRAR NO GRUPO
+      </a>
+    </div>
+
+    <!-- 3. DESTAQUE DO CANAL -->
+    <section class="bg-[#0c101d] gold-border rounded-2xl p-5 md:p-6 blue-glow relative">
+      
+      <!-- Coroa em destaque -->
+      <div class="text-center mb-3">
+        <span class="text-3xl drop-shadow-[0_0_10px_rgba(252,211,77,0.8)]">👑</span>
+        <h2 class="text-lg font-bold text-white mt-1">Destaque do Canal Sucesso X</h2>
+      </div>
+
+      <!-- PLAYER FIXO SEM ERRO 153 -->
+      <div class="w-full aspect-video rounded-xl overflow-hidden bg-black border border-gray-700 shadow-2xl relative">
+        <iframe 
+          class="w-full h-full" 
+          src="https://www.youtube.com/embed/nQ8RuojS7io?rel=0" 
+          title="Vídeo Destaque - Sucesso X" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <!-- BOTÃO DE INSCRIÇÃO DIRETO -->
+      <div class="mt-5 text-center">
+        <a href="https://www.youtube.com/@sucessox-ofc?sub_confirmation=1" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 via-red-500 to-amber-500 hover:brightness-110 text-white font-extrabold px-8 py-3 rounded-xl transition text-sm shadow-lg tracking-wide uppercase">
+          <i class="fa-brands fa-youtube text-lg"></i> INSCREVA-SE NO CANAL
+        </a>
+      </div>
+    </section>
+
+    <!-- 4. CALCULADORA DE PLAYLIST -->
+    <main class="bg-[#0c101d] gold-border rounded-2xl p-5 md:p-6 shadow-xl">
+      <h2 class="text-base font-bold mb-4 flex items-center gap-2 text-amber-400">
+        <i class="fa-solid fa-calculator"></i> Calculadora de Duração de Playlist
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        <div class="lg:col-span-5 space-y-3">
+          <label class="block text-xs text-gray-400 font-medium">Link da Playlist do YouTube</label>
+          <input type="url" id="playlistUrl" placeholder="https://www.youtube.com/playlist?list=..." class="w-full px-3 py-2.5 rounded-xl bg-[#060810] border border-gray-700 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-400">
+          <button onclick="calcular()" class="w-full gold-gradient text-black font-extrabold py-2.5 rounded-xl transition hover:opacity-90 text-xs tracking-wider uppercase shadow-md flex items-center justify-center gap-2">
+            🚀 CALCULAR
+          </button>
+        </div>
+
+        <div class="lg:col-span-7 grid grid-cols-3 gap-2 pt-1 lg:pt-0">
+          <div class="bg-[#060810] border border-gray-800 p-3 rounded-xl text-center">
+            <span class="text-[10px] text-gray-400 uppercase font-semibold block">Vídeos</span>
+            <span id="resTotal" class="text-lg font-black text-white mt-1 block">0</span>
+          </div>
+          <div class="bg-[#060810] border border-gray-800 p-3 rounded-xl text-center">
+            <span class="text-[10px] text-gray-400 uppercase font-semibold block">Tempo</span>
+            <span id="resTempo" class="text-lg font-black text-amber-400 mt-1 block">00:00</span>
+          </div>
+          <div class="bg-[#060810] border border-gray-800 p-3 rounded-xl text-center">
+            <span class="text-[10px] text-gray-400 uppercase font-semibold block">Duração média</span>
+            <span id="resMedia" class="text-lg font-black text-blue-400 mt-1 block">0 min</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 5. GERADOR DE TAGS PARA SEO -->
+    <section class="bg-[#0c101d] gold-border rounded-2xl p-5 md:p-6 shadow-xl">
+      <h2 class="text-base font-bold text-amber-400 mb-2 flex items-center gap-2">
+        <i class="fa-solid fa-tag"></i> Gerador de Tags para SEO
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="lg:col-span-5 space-y-3">
+          <label class="block text-xs text-gray-400 font-medium">Assunto do Vídeo</label>
+          <input type="text" id="tagInput" placeholder="Ex: Como crescer no YouTube..." class="w-full px-3 py-2.5 rounded-xl bg-[#060810] border border-gray-700 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-400">
+          <button onclick="gerarTags()" class="w-full gold-gradient text-black font-extrabold py-2.5 rounded-xl transition hover:opacity-90 text-xs tracking-wider uppercase shadow-md flex items-center justify-center gap-2">
+            ⚡ GERAR TAGS
+          </button>
+        </div>
+
+        <div class="lg:col-span-7 bg-[#060810] border border-gray-800 p-3 rounded-xl min-h-[90px] relative">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-[10px] text-gray-500 uppercase font-bold">Tags Sugeridas:</span>
+            <button onclick="copiarTags()" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-1 rounded transition flex items-center gap-1">
+              <i class="fa-regular fa-copy"></i> Copiar
+            </button>
+          </div>
+          <div id="tagsContainer" class="flex flex-wrap gap-1.5">
+            <span class="text-xs text-gray-600 italic">As tags geradas aparecerão aqui...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RODAPÉ -->
+    <footer class="text-center text-[11px] text-gray-600 pt-2">
+      <p class="font-bold text-gray-400">SUCESSO X</p>
+      <p>© Ferramentas & Conteúdo para Criadores</p>
+    </footer>
+
+  </div>
+
+  <script>
+    function calcular() {
+      const url = document.getElementById('playlistUrl').value;
+      if(!url) {
+        alert("Cole um link válido de playlist do YouTube!");
+        return;
+      }
+      document.getElementById('resTotal').innerText = '12';
+      document.getElementById('resTempo').innerText = '02:15';
+      document.getElementById('resMedia').innerText = '11 min';
+    }
+
+    let tagsAtuais = [];
+    function gerarTags() {
+      const tema = document.getElementById('tagInput').value.trim();
+      if (!tema) {
+        alert('Digite o assunto do vídeo!');
+        return;
+      }
+
+      tagsAtuais = [
+        tema,
+        `como ${tema}`,
+        `dicas de ${tema}`,
+        `tutorial ${tema}`,
+        `${tema} passo a passo`,
+        `${tema} para iniciantes`,
+        `como crescer com ${tema}`,
+        `sucesso x ${tema}`
+      ];
+
+      const container = document.getElementById('tagsContainer');
+      container.innerHTML = '';
+      tagsAtuais.forEach(tag => {
+        container.innerHTML += `<span class="bg-blue-950/80 border border-blue-600/40 text-blue-300 text-[11px] px-2.5 py-1 rounded-md font-medium">#${tag}</span>`;
+      });
+    }
+
+    function copiarTags() {
+      if (tagsAtuais.length === 0) return;
+      navigator.clipboard.writeText(tagsAtuais.join(', '));
+      alert('Tags copiadas para a área de transferência!');
+    }
+  </script>
+</body>
+</html>
