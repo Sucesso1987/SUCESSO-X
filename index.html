@@ -7,7 +7,7 @@
   <!-- TÍTULO DA PÁGINA -->
   <title>Sucesso X - Ferramentas para Criadores de Conteúdo</title>
 
-  <!-- META TAGS DE PRÉVIA PARA WHATSAPP E REDES SOCIAIS (OPEN GRAPH) -->
+  <!-- META TAGS DE PRÉVIA PARA WHATSAPP -->
   <meta property="og:title" content="Sucesso X - Ferramentas para Criadores">
   <meta property="og:description" content="Calculadora de duração de playlist, gerador de tags para SEO e comunidade exclusiva para criadores.">
   <meta property="og:image" content="https://sucesso-x.vercel.app/logo.png">
@@ -64,16 +64,13 @@
       </a>
     </div>
 
-    <!-- 3. DESTAQUE DO CANAL (PLAYER AUTOMÁTICO DO CANAL) -->
+    <!-- 3. DESTAQUE DO CANAL -->
     <section class="bg-[#0c101d] gold-border rounded-2xl p-5 md:p-6 blue-glow relative">
-      
-      <!-- Coroa em destaque -->
       <div class="text-center mb-3">
         <span class="text-3xl drop-shadow-[0_0_10px_rgba(252,211,77,0.8)]">👑</span>
         <h2 class="text-lg font-bold text-white mt-1">Destaque do Canal Sucesso X</h2>
       </div>
 
-      <!-- PLAYER AUTOMÁTICO DO CANAL (@sucessox-ofc) -->
       <div class="w-full aspect-video rounded-xl overflow-hidden bg-black border border-gray-700 shadow-2xl relative">
         <iframe 
           class="w-full h-full" 
@@ -85,7 +82,6 @@
         </iframe>
       </div>
 
-      <!-- BOTÃO DE INSCRIÇÃO DIRETO -->
       <div class="mt-5 text-center">
         <a href="https://www.youtube.com/@sucessox-ofc?sub_confirmation=1" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 via-red-500 to-amber-500 hover:brightness-110 text-white font-extrabold px-8 py-3 rounded-xl transition text-sm shadow-lg tracking-wide uppercase">
           <i class="fa-brands fa-youtube text-lg"></i> INSCREVA-SE NO CANAL
@@ -93,7 +89,7 @@
       </div>
     </section>
 
-    <!-- 4. CALCULADORA DE PLAYLIST -->
+    <!-- 4. CALCULADORA DE PLAYLIST REAL -->
     <main class="bg-[#0c101d] gold-border rounded-2xl p-5 md:p-6 shadow-xl">
       <h2 class="text-base font-bold mb-4 flex items-center gap-2 text-amber-400">
         <i class="fa-solid fa-calculator"></i> Calculadora de Duração de Playlist
@@ -103,7 +99,7 @@
         <div class="lg:col-span-5 space-y-3">
           <label class="block text-xs text-gray-400 font-medium">Link da Playlist do YouTube</label>
           <input type="url" id="playlistUrl" placeholder="https://www.youtube.com/playlist?list=..." class="w-full px-3 py-2.5 rounded-xl bg-[#060810] border border-gray-700 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-400">
-          <button onclick="calcular()" class="w-full gold-gradient text-black font-extrabold py-2.5 rounded-xl transition hover:opacity-90 text-xs tracking-wider uppercase shadow-md flex items-center justify-center gap-2">
+          <button onclick="calcular()" id="btnCalcular" class="w-full gold-gradient text-black font-extrabold py-2.5 rounded-xl transition hover:opacity-90 text-xs tracking-wider uppercase shadow-md flex items-center justify-center gap-2">
             🚀 CALCULAR
           </button>
         </div>
@@ -114,8 +110,8 @@
             <span id="resTotal" class="text-lg font-black text-white mt-1 block">0</span>
           </div>
           <div class="bg-[#060810] border border-gray-800 p-3 rounded-xl text-center">
-            <span class="text-[10px] text-gray-400 uppercase font-semibold block">Tempo</span>
-            <span id="resTempo" class="text-lg font-black text-amber-400 mt-1 block">00:00</span>
+            <span class="text-[10px] text-gray-400 uppercase font-semibold block">Tempo Total</span>
+            <span id="resTempo" class="text-lg font-black text-amber-400 mt-1 block">00:00:00</span>
           </div>
           <div class="bg-[#060810] border border-gray-800 p-3 rounded-xl text-center">
             <span class="text-[10px] text-gray-400 uppercase font-semibold block">Duração média</span>
@@ -163,15 +159,79 @@
   </div>
 
   <script>
-    function calcular() {
-      const url = document.getElementById('playlistUrl').value;
-      if(!url) {
+    // ⚠️ COLE SUA CHAVE DE API ENTRE AS ASPAS ABAIXO:
+    const API_KEY = 'AIzaSyBRMhZSCtcvA3DKUZ8OigSvDN-2w4vLSW4';
+
+    async function calcular() {
+      const urlInput = document.getElementById('playlistUrl').value.trim();
+      const btn = document.getElementById('btnCalcular');
+      
+      const match = urlInput.match(/[&?]list=([^&]+)/);
+      if (!match) {
         alert("Cole um link válido de playlist do YouTube!");
         return;
       }
-      document.getElementById('resTotal').innerText = '12';
-      document.getElementById('resTempo').innerText = '02:15';
-      document.getElementById('resMedia').innerText = '11 min';
+
+      const playlistId = match[1];
+      btn.innerText = "⏳ CALCULANDO...";
+      btn.disabled = true;
+
+      try {
+        let videoIds = [];
+        let nextPageToken = '';
+        
+        // Puxa até 100 vídeos da playlist
+        do {
+          const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=50&playlistId=${playlistId}&pageToken=${nextPageToken}&key=${API_KEY}`);
+          const data = await res.json();
+
+          if (data.error) throw new Error(data.error.message);
+
+          data.items.forEach(item => videoIds.push(item.contentDetails.videoId));
+          nextPageToken = data.nextPageToken || '';
+        } while (nextPageToken && videoIds.length < 100);
+
+        if (videoIds.length === 0) {
+          alert("Nenhum vídeo encontrado nesta playlist.");
+          return;
+        }
+
+        // Puxa a duração exata de cada vídeo
+        const videoRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds.join(',')}&key=${API_KEY}`);
+        const videoData = await videoRes.json();
+
+        let totalSeconds = 0;
+        videoData.items.forEach(video => {
+          totalSeconds += parseISO8601Duration(video.contentDetails.duration);
+        });
+
+        // Formatação dos resultados
+        const hrs = Math.floor(totalSeconds / 3600);
+        const mins = Math.floor((totalSeconds % 3600) / 60);
+        const secs = totalSeconds % 60;
+
+        const mediaMins = Math.round((totalSeconds / videoIds.length) / 60);
+
+        document.getElementById('resTotal').innerText = videoIds.length;
+        document.getElementById('resTempo').innerText = `${hrs}h ${mins}m ${secs}s`;
+        document.getElementById('resMedia').innerText = `${mediaMins} min`;
+
+      } catch (err) {
+        alert("Erro ao calcular: Verifique a API Key ou a privacidade da playlist.");
+        console.error(err);
+      } finally {
+        btn.innerText = "🚀 CALCULAR";
+        btn.disabled = false;
+      }
+    }
+
+    // Converte a duração ISO 8601 do YouTube (ex: PT1H2M30S) em segundos
+    function parseISO8601Duration(duration) {
+      const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+      const hours = parseInt(match[1] || 0);
+      const minutes = parseInt(match[2] || 0);
+      const seconds = parseInt(match[3] || 0);
+      return hours * 3600 + minutes * 60 + seconds;
     }
 
     let tagsAtuais = [];
