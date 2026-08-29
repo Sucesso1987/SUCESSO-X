@@ -159,7 +159,6 @@
   </div>
 
   <script>
-    // ⚠️ COLE SUA CHAVE DE API ENTRE AS ASPAS ABAIXO:
     const API_KEY = 'AIzaSyBRMhZSCtcvA3DKUZ8OigSvDN-2w4vLSW4';
 
     async function calcular() {
@@ -180,32 +179,48 @@
         let videoIds = [];
         let nextPageToken = '';
         
-        // Puxa até 100 vídeos da playlist
         do {
           const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=50&playlistId=${playlistId}&pageToken=${nextPageToken}&key=${API_KEY}`);
           const data = await res.json();
 
-          if (data.error) throw new Error(data.error.message);
+          if (data.error) {
+            console.error("Erro da API:", data.error);
+            throw new Error(data.error.message);
+          }
 
-          data.items.forEach(item => videoIds.push(item.contentDetails.videoId));
+          if (data.items) {
+            data.items.forEach(item => {
+              if (item.contentDetails && item.contentDetails.videoId) {
+                videoIds.push(item.contentDetails.videoId);
+              }
+            });
+          }
+          
           nextPageToken = data.nextPageToken || '';
         } while (nextPageToken && videoIds.length < 100);
 
         if (videoIds.length === 0) {
-          alert("Nenhum vídeo encontrado nesta playlist.");
+          alert("Nenhum vídeo válido encontrado nesta playlist.");
           return;
         }
 
-        // Puxa a duração exata de cada vídeo
-        const videoRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds.join(',')}&key=${API_KEY}`);
-        const videoData = await videoRes.json();
-
         let totalSeconds = 0;
-        videoData.items.forEach(video => {
-          totalSeconds += parseISO8601Duration(video.contentDetails.duration);
-        });
+        
+        // Faz a busca da duração em lotes de no máximo 50 vídeos
+        for (let i = 0; i < videoIds.length; i += 50) {
+          const batch = videoIds.slice(i, i + 50);
+          const videoRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${batch.join(',')}&key=${API_KEY}`);
+          const videoData = await videoRes.json();
 
-        // Formatação dos resultados
+          if (videoData.items) {
+            videoData.items.forEach(video => {
+              if (video.contentDetails && video.contentDetails.duration) {
+                totalSeconds += parseISO8601Duration(video.contentDetails.duration);
+              }
+            });
+          }
+        }
+
         const hrs = Math.floor(totalSeconds / 3600);
         const mins = Math.floor((totalSeconds % 3600) / 60);
         const secs = totalSeconds % 60;
@@ -217,7 +232,7 @@
         document.getElementById('resMedia').innerText = `${mediaMins} min`;
 
       } catch (err) {
-        alert("Erro ao calcular: Verifique a API Key ou a privacidade da playlist.");
+        alert("Erro ao calcular. Verifique se a YouTube Data API v3 está ATIVADA no Google Cloud Console e se a playlist é pública.");
         console.error(err);
       } finally {
         btn.innerText = "🚀 CALCULAR";
@@ -225,9 +240,9 @@
       }
     }
 
-    // Converte a duração ISO 8601 do YouTube (ex: PT1H2M30S) em segundos
     function parseISO8601Duration(duration) {
       const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+      if (!match) return 0;
       const hours = parseInt(match[1] || 0);
       const minutes = parseInt(match[2] || 0);
       const seconds = parseInt(match[3] || 0);
